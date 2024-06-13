@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: jtw-security
+  datasource:
+    url: jdbc:postgresql://localhost:5432/default
+    username: root
+    password: root
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+        format_sql: true
+        generate_statistics: false
+        order_inserts: true
+        order_updates: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  #logging:
+  #  level:
+  #    org:
+  #      springframework: DEBUG
+
+  # set cookie expiry for 30 minutes
+jwt:
+  cookieExpiry: 18000
+
+authentication-test:
+  auth:
+    tokenSecret: myTokenSecret
+    tokenExpirationMsec: 3600000 #1 hour
+    refreshTokenExpirationMsec: 7776000000 #90 days
+    accessTokenCookieName: accessToken
+    refreshTokenCookieName: refreshToken
+
