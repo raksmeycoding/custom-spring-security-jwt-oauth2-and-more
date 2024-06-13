@@ -35,7 +35,6 @@ public class CustomUsernameAuthenticationFilter extends UsernamePasswordAuthenti
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
         String username;
         String password;
 
