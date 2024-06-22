@@ -3,7 +3,7 @@ package com.raksmey.jtw.security.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -12,6 +12,11 @@ import java.util.Set;
 
 @Entity
 @Table(name = "authority")
+@Builder
+@Data
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class Authority implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "authority_seq")

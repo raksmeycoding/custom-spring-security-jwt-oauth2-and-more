@@ -86,7 +86,7 @@ public class SecurityConfig {
         filter.setAuthenticationManager(authenticationManager(httpSecurity));
         filter.setAuthenticationSuccessHandler(customAuthenticationSuccessHandler);
         filter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
-        filter.setFilterProcessesUrl("/auth/login");
+        filter.setFilterProcessesUrl("/api/auth/login");
         return filter;
 
     }
@@ -98,10 +98,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/auth/login").permitAll();
                     auth.requestMatchers("/api/auth/**").permitAll();
-                    auth.requestMatchers("/profile/me").permitAll();
-                    auth.requestMatchers("/test/me").permitAll();
+                    auth.requestMatchers("/api/profile/me").permitAll();
+                    auth.requestMatchers("/api/test/me").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .authenticationProvider(customUsernamePasswordAuthenticationProvider)

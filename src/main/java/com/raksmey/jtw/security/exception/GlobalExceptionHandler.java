@@ -18,26 +18,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception ex, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false));
-        ex.printStackTrace();
-        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+//        ex.printStackTrace();
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(BadRequestExceptionHandler.class)
+    public ResponseEntity<?> handleBadRequestExceptionHandler(Exception ex, WebRequest request) {
+//        ex.printStackTrace();
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
 
 
-@Setter
-@ToString
-@Builder
-@NoArgsConstructor
-@Getter
-class ErrorDetails {
-    // Getters and setters
-    private String message;
-    private String details;
 
-    public ErrorDetails(String message, String details) {
-        this.message = message;
-        this.details = details;
-    }
 
-}

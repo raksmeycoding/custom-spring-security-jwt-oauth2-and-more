@@ -1,7 +1,13 @@
 package com.raksmey.jtw.security.service;
 
 import com.raksmey.jtw.security.dto.*;
+import com.raksmey.jtw.security.exception.BadRequestExceptionHandler;
+import com.raksmey.jtw.security.model.AuthProvider;
+import com.raksmey.jtw.security.model.Authority;
 import com.raksmey.jtw.security.model.User;
+import com.raksmey.jtw.security.model.UserRoleEnum;
+import com.raksmey.jtw.security.model.requestDto.SignUpRequestDto;
+import com.raksmey.jtw.security.repository.AuthorityRepository;
 import com.raksmey.jtw.security.repository.UserRepository;
 import com.raksmey.jtw.security.util.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +15,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Service
@@ -19,14 +31,20 @@ public class UserServiceImpl implements UserService {
 
 
     private final TokenProvider tokenProvider;
+    private final AuthorityRepository authorityRepository;
 
 
     private final CookieUtil cookieUtil;
 
-    public UserServiceImpl(UserRepository userRepository, TokenProvider tokenProvider, CookieUtil cookieUtil) {
+
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserRepository userRepository, TokenProvider tokenProvider, AuthorityRepository authorityRepository, CookieUtil cookieUtil, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.tokenProvider = tokenProvider;
+        this.authorityRepository = authorityRepository;
         this.cookieUtil = cookieUtil;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -96,5 +114,36 @@ public class UserServiceImpl implements UserService {
 
     private void addRefreshTokenCookie(HttpHeaders httpHeaders, Token token) {
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createRefreshTokenCookie(token.getTokenValue(), token.getDuration()).toString());
+    }
+
+
+    @Override
+    public void registerUser(SignUpRequestDto signUpRequestDto) {
+
+        // check if username exists in DB
+        if (userRepository.existsByEmail(signUpRequestDto.getUsername())) {
+            throw new BadRequestExceptionHandler("User has been already registered");
+        }
+
+        if (userRepository.existsByUsername(signUpRequestDto.getUsername())) {
+            throw new BadRequestExceptionHandler("User has been already registered");
+        }
+
+        Authority authority = authorityRepository.findByAuthorityName("ROLE_USER")
+                .orElseThrow(() -> new BadRequestExceptionHandler("User role has not been found"));
+
+
+        User user = User.builder()
+                .username(signUpRequestDto.getUsername())
+                .email(signUpRequestDto.getEmail())
+                .password(passwordEncoder.encode(signUpRequestDto.getPassword()))
+                .provider(AuthProvider.LOCAL)
+                .enabled(true)
+                .authorities(new HashSet<>(Set.of(authority)))
+                .build();
+
+        userRepository.save(user);
+
+
     }
 }

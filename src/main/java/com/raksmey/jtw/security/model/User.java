@@ -4,7 +4,10 @@ import com.raksmey.jtw.security.dto.UserSummary;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -13,6 +16,9 @@ import java.util.Set;
 @Entity
 @Table(name = "\"user\"")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_seq")
